@@ -47,7 +47,14 @@ void printHashSet(struct HashSet *hs) {
 	printf("Data ...\n");
 	int i=0;
 	for(i=0; i < (hs->table_size); i++) {
-		printf("[%d] = %d\n", i, hs->hp[i]);
+
+		if(hs->hp[i] == EMPTY) {
+			printf("[%d] = EMPTY\n", i);
+		} else if(hs->hp[i] == DELETED) {
+			printf("[%d] = DELETED\n", i);
+		}else {
+			printf("[%d] = %d\n", i, hs->hp[i]);
+		}
 	}
 }
 
@@ -62,10 +69,10 @@ int hash(int hashKey, int tableSize) {
 
 int insert(struct HashSet* hs, int data) {
 
-	int hk = convertToHashCode(data);
+	int hashCode = convertToHashCode(data);
+	int hi =  hash(hashCode, hs->table_size);
+	int hk=0;
 
-	int hi =  hash(hk, hs->table_size);
-	
 	int i=0;
 	while(i < hs->table_size) {
 		i++;
@@ -76,7 +83,7 @@ int insert(struct HashSet* hs, int data) {
 			return hi;
 	
 		} else {
-			hk = hi + 1;
+			hk = hash(hashCode, hs->table_size) + i;
 			hi = hash(hk, hs->table_size);		
 		}
 	}
@@ -87,9 +94,9 @@ int insert(struct HashSet* hs, int data) {
 
 int search(struct HashSet* hs, int data) {
 
-	int hk = convertToHashCode(data);
-
-	int hi =  hash(hk, hs->table_size);
+	int hashCode = convertToHashCode(data);
+	int hi =  hash(hashCode, hs->table_size);
+	int hk=0;
 	
 	int i=0;
 	while(i < hs->table_size && (hs->hp)[hi] != EMPTY) {
@@ -99,7 +106,7 @@ int search(struct HashSet* hs, int data) {
 			(hs->hp)[hi] = data;
 			return hi;
 		} else {
-			hk = hi + 1;
+			hk = hash(hashCode, hs->table_size) + i;
 			hi = hash(hk, hs->table_size);		
 		}
 	}
@@ -111,8 +118,9 @@ int search(struct HashSet* hs, int data) {
 
 int delete(struct HashSet* hs, int data) {
 
-	int hk = convertToHashCode(data);
-	int hi =  hash(hk, hs->table_size);
+	int hashCode = convertToHashCode(data);
+	int hi =  hash(hashCode, hs->table_size);
+	int hk=0;
 
 	int i=0;
 	while(i < hs->table_size && (hs->hp)[hi] != EMPTY) {
@@ -123,7 +131,7 @@ int delete(struct HashSet* hs, int data) {
 			hs->size = hs->size - 1;
 			return hi;
 		} else {
-			hk = hi + 1;
+			hk = hash(hashCode, hs->table_size) + i;
 			hi = hash(hk, hs->table_size);		
 		}
 	}

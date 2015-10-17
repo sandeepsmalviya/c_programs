@@ -69,9 +69,10 @@ int hash(int hashKey, int tableSize) {
 
 int insert(struct HashSet* hs, int data) {
 
-	int hashCode = convertToHashCode(data);
-	int hi =  hash(hashCode, hs->table_size);
-	int hk=0;
+	int hk = convertToHashCode(data);
+
+	int hi =  hash(hk, hs->table_size);
+	
 	int i=0;
 	while(i < hs->table_size) {
 		i++;
@@ -82,7 +83,7 @@ int insert(struct HashSet* hs, int data) {
 			return hi;
 	
 		} else {
-			hk = hash(hashCode, hs->table_size) + i*i;
+			hk = hi + i*i;
 			hi = hash(hk, hs->table_size);		
 		}
 	}
@@ -93,10 +94,10 @@ int insert(struct HashSet* hs, int data) {
 
 int search(struct HashSet* hs, int data) {
 
-	int hashCode = convertToHashCode(data);
-	int hi =  hash(hashCode, hs->table_size);
-	int hk=0;
+	int hk = convertToHashCode(data);
 
+	int hi =  hash(hk, hs->table_size);
+	
 	int i=0;
 	while(i < hs->table_size && (hs->hp)[hi] != EMPTY) {
 		i++;
@@ -105,7 +106,7 @@ int search(struct HashSet* hs, int data) {
 			(hs->hp)[hi] = data;
 			return hi;
 		} else {
-			hk = hash(hashCode, hs->table_size) + i*i;
+			hk = hi + i*i;
 			hi = hash(hk, hs->table_size);		
 		}
 	}
@@ -117,9 +118,8 @@ int search(struct HashSet* hs, int data) {
 
 int delete(struct HashSet* hs, int data) {
 
-	int hashCode = convertToHashCode(data);
-	int hi =  hash(hashCode, hs->table_size);
-	int hk=0;
+	int hk = convertToHashCode(data);
+	int hi =  hash(hk, hs->table_size);
 
 	int i=0;
 	while(i < hs->table_size && (hs->hp)[hi] != EMPTY) {
@@ -130,7 +130,7 @@ int delete(struct HashSet* hs, int data) {
 			hs->size = hs->size - 1;
 			return hi;
 		} else {
-			hk = hash(hashCode, hs->table_size) + i*i;
+			hk = hi + i*i;
 			hi = hash(hk, hs->table_size);		
 		}
 	}
