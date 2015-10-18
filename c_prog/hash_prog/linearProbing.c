@@ -70,24 +70,23 @@ int hash(int hashKey, int tableSize) {
 int insert(struct HashSet* hs, int data) {
 
 	int hashCode = convertToHashCode(data);
-	int hi =  hash(hashCode, hs->table_size);
+	int hi_initial =  hash(hashCode, hs->table_size);
+	int hi=0;
 	int hk=0;
 
 	int i=0;
 	while(i < hs->table_size) {
-		i++;
 
+		hk = hi_initial + i;
+		hi = hash(hk, hs->table_size);		
+		
 		if((hs->hp)[hi] == EMPTY ||  (hs->hp)[hi] == DELETED) {
 			(hs->hp)[hi] = data;
 			hs->size = hs->size + 1;
-			return hi;
-	
-		} else {
-			hk = hash(hashCode, hs->table_size) + i;
-			hi = hash(hk, hs->table_size);		
+			return hi;	
 		}
+		i++;
 	}
-
 	printf("Hash Table is full, Cant insert ...%d\n", data);
 	return -1;
 }
@@ -95,20 +94,26 @@ int insert(struct HashSet* hs, int data) {
 int search(struct HashSet* hs, int data) {
 
 	int hashCode = convertToHashCode(data);
-	int hi =  hash(hashCode, hs->table_size);
+	int hi_initial =  hash(hashCode, hs->table_size);
+	int hi =  hi_initial;
 	int hk=0;
 	
 	int i=0;
-	while(i < hs->table_size && (hs->hp)[hi] != EMPTY) {
-		i++;
+	while(i < hs->table_size) {
+
+		hk = hi_initial + i;
+		hi = hash(hk, hs->table_size);		
+
+		if((hs->hp)[hi] == EMPTY) {
+			break;
+		}
 
 		if((hs->hp)[hi] == data) {
 			(hs->hp)[hi] = data;
 			return hi;
-		} else {
-			hk = hash(hashCode, hs->table_size) + i;
-			hi = hash(hk, hs->table_size);		
 		}
+		
+		i++;
 	}
 
 	return -1;
@@ -119,21 +124,27 @@ int search(struct HashSet* hs, int data) {
 int delete(struct HashSet* hs, int data) {
 
 	int hashCode = convertToHashCode(data);
-	int hi =  hash(hashCode, hs->table_size);
+	int hi_initial =  hash(hashCode, hs->table_size);
+	int hi =  hi_initial;
 	int hk=0;
 
 	int i=0;
-	while(i < hs->table_size && (hs->hp)[hi] != EMPTY) {
-		i++;
+	while(i < hs->table_size) {
 
+		hk = hi_initial + i;
+		hi = hash(hk, hs->table_size);		
+
+		
+		if((hs->hp)[hi] == EMPTY) {
+			break;
+		}
 		if((hs->hp)[hi] == data) {
 			(hs->hp)[hi] = DELETED;
 			hs->size = hs->size - 1;
 			return hi;
-		} else {
-			hk = hash(hashCode, hs->table_size) + i;
-			hi = hash(hk, hs->table_size);		
-		}
+		} 
+
+		i++;
 	}
 
 	return -1;
@@ -151,10 +162,9 @@ int main() {
 
 	printHashSet(hs);
 
-	hs->hp[4] = DELETED;
-	hs->hp[5] = DELETED;
-	hs->hp[8] = DELETED;
-//	hs->hp[9] = DELETED;
+	delete(hs, 40);
+	delete(hs, 50);
+	delete(hs, 80);
 	printHashSet(hs);
 
 	insert(hs, 110);
