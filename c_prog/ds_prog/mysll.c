@@ -1,6 +1,6 @@
 #include<stdio.h>
 #include<stdlib.h>
-
+#define SLL_MAX_SIZE 100
 struct node {
 	int data;
 	struct node *next;
@@ -10,11 +10,15 @@ struct SLL {
 	struct node *head;
 	struct node *tail;
 	int count;
+	int max_size;
 };
 
 
-struct SLL* createSLL();
+struct SLL* createSLL(int max_size);
 void deleteSLL(struct SLL *sll);
+
+int isSLLEmpty(struct SLL *sll);
+int isSLLFull(struct SLL *sll);
 
 struct node *createNode(int data);
 void deleteNode(struct node *temp);
@@ -36,7 +40,7 @@ int search(struct SLL *sll, int data);
 
 int main() {
 
-	struct SLL *sll=createSLL();
+	struct SLL *sll=createSLL(-1);
 	
 	display(sll);
 
@@ -76,11 +80,18 @@ int main() {
 }
 
 
-struct SLL* createSLL() {
+struct SLL* createSLL(int max_size) {
 	struct SLL *temp =  (struct SLL*)malloc(sizeof(struct SLL));
         temp->head = NULL;
 	temp->tail = NULL;
 	temp->count = 0;
+
+	if(max_size < 0) {
+		temp->max_size = SLL_MAX_SIZE;
+	}else {
+		temp->max_size = max_size;
+	}
+	
 	
 	return temp;
 }
@@ -94,9 +105,31 @@ void deleteSLL(struct SLL *sll) {
 	
 }
 
+int isSLLEmpty(struct SLL *sll) {
+	if(sll->count == 0) {
+		printf("SLL is empty, count = %d and  max_count  = %d\n", sll->count, sll->max_size);		
+		return 1;
+	}else {
+		return 0;
+	}
+}
+
+int isSLLFull(struct SLL *sll) {
+	if(sll->count == sll->max_size) {
+		printf("SLL is full max_count reached = %d\n", sll->max_size);		
+		return 1;
+	}else {
+		return 0;
+	}
+}
+
 struct node *createNode(int data) {
 	struct node *newNode=NULL;
 	newNode=(struct node*)malloc(sizeof(struct node));
+	if(newNode == NULL) {
+		printf("Memory for SLL is full, can't allocate\n");
+		return NULL;
+	}
 	newNode->data = data;
 	newNode->next = NULL;
 	
@@ -122,6 +155,11 @@ int countNode(struct SLL* sll) {
 }
 
 void addfirst(struct SLL *sll, int data) {
+
+	if(isSLLFull(sll)) {
+		return;
+	}
+
 	struct node *newNode = createNode(data);
 	sll->count = sll->count +1;
 	if(sll->head == NULL) {
@@ -136,6 +174,11 @@ void addfirst(struct SLL *sll, int data) {
 
 
 void addlast(struct SLL *sll, int data) {
+
+	if(isSLLFull(sll)) {
+		return;
+	}
+
 	struct node *newNode = createNode(data);
 	sll->count = sll->count + 1;
 	if(sll->head == NULL) {
@@ -150,6 +193,12 @@ void addlast(struct SLL *sll, int data) {
 
 
 void addpos(struct SLL *sll, int data, int position) {
+
+
+	if(isSLLFull(sll)) {
+		return;
+	}
+
 	if(position > sll->count) {
 		printf("Position=%d can not be grater than count =%d...\n", position, sll->count);
 		return;

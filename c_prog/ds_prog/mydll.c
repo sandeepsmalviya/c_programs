@@ -1,6 +1,6 @@
 #include<stdio.h>
 #include<stdlib.h>
-
+#define DLL_MAX_SIZE 100
 struct node {
 	struct node *prev;
 	int data;
@@ -11,14 +11,19 @@ struct DLL {
 	struct node *head;
 	struct node *tail;
 	int count;
+	int max_size;
 };
 
 
 struct DLL* createDLL();
 void deleteDLL(struct DLL *dll);
 
+int isDLLEmpty(struct DLL *dll);
+int isDLLFull(struct DLL *dll);
+
 struct node *createNode(int data);
 void deleteNode(struct node *temp);
+
 
 void display(struct DLL *dll);
 int countNode(struct DLL *dll);
@@ -36,7 +41,7 @@ int search(struct DLL *dll, int data);
 
 int main() {
 
-	struct DLL *dll=createDLL();
+	struct DLL *dll=createDLL(5);
 
 	display(dll);
 
@@ -77,14 +82,21 @@ int main() {
 }
 
 
-struct DLL* createDLL() {
+struct DLL* createDLL(int max_size) {
 	struct DLL *temp =  (struct DLL*)malloc(sizeof(struct DLL));
         temp->head = NULL;
 	temp->tail = NULL;
 	temp->count = 0;
+
+	if(max_size < 0) {
+		temp->max_size = DLL_MAX_SIZE;
+	}else {
+		temp->max_size = max_size;
+	}
+
 	
 	return temp;
-};
+}
 
 void deleteDLL(struct DLL *dll) {
 	while(dll->head != NULL) {
@@ -94,11 +106,37 @@ void deleteDLL(struct DLL *dll) {
 
 	free(dll);
 	dll = NULL;
-};
+}
+
+
+int isDLLEmpty(struct DLL *dll) {
+	if(dll->count == 0) {
+		printf("DLL is empty, count = %d and  max_count  = %d\n", dll->count, dll->max_size);		
+		return 1;
+	}else {
+		return 0;
+	}
+}
+
+int isDLLFull(struct DLL *dll) {
+	if(dll->count == dll->max_size) {
+		printf("DLL is full max_count reached = %d\n", dll->max_size);		
+		return 1;
+	}else {
+		return 0;
+	}
+}
+
 
 struct node *createNode(int data) {
 	struct node *newNode=NULL;
 	newNode=(struct node*)malloc(sizeof(struct node));
+
+	if(newNode == NULL) {
+		printf("Memory for DLL is full, can't allocate\n");
+		return NULL;
+	}
+
 	newNode->data = data;
 	newNode->next = NULL;
 	newNode->prev = NULL;
@@ -125,6 +163,11 @@ int countNode(struct DLL* dll) {
 }
 
 void addfirst(struct DLL *dll, int data) {
+
+	if(isDLLFull(dll)) {
+		return;
+	}
+
 	struct node *newNode = createNode(data);
 	dll->count = dll->count +1;
 	if(dll->head == NULL) {
@@ -141,6 +184,11 @@ void addfirst(struct DLL *dll, int data) {
 
 
 void addlast(struct DLL *dll, int data) {
+
+	if(isDLLFull(dll)) {
+		return;
+	}
+
 	struct node *newNode = createNode(data);
 	dll->count = dll->count + 1;
 	if(dll->head == NULL) {
@@ -156,6 +204,10 @@ void addlast(struct DLL *dll, int data) {
 
 
 void addpos(struct DLL *dll, int data, int position) {
+
+	if(isDLLFull(dll)) {
+		return;
+	}
 
 	if(position > dll->count) {
 		printf("Position=%d can not be grater than count =%d...\n", position, dll->count);
